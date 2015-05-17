@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
         lessonPlan.setOnDragListener(this);
         for (int i = 0 ; i < planelements.getChildCount() ; i++) {
             planelements.getChildAt(i).setOnTouchListener(this);
+
             final EditText edittext = (EditText) planelements.getChildAt(i).findViewById(R.id.inputEditText);
             edittext.setOnKeyListener(new View.OnKeyListener() {
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -68,8 +70,8 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            v.startDrag(null, new View.DragShadowBuilder(v), v, 0);
             setVisibilitySafe(v, View.INVISIBLE);
+            v.startDrag(null, new View.DragShadowBuilder(v), v, 0);
         }
         return true;
     }
@@ -77,24 +79,28 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
     @Override
     public boolean onDrag(View v, DragEvent event) {
         Log.i(TAG, "onDrag");
-        View draggedView = (View) event.getLocalState();
+        final View draggedView = (View) event.getLocalState();
         switch(event.getAction()) {
 
             case DragEvent.ACTION_DRAG_ENDED:
+                break;
+            case DragEvent.ACTION_DROP:
+                Log.i(TAG, "Drop");
 
                 if (isFirst) {
                     isFirst = false;
                     lessonPlan.removeAllViews();
                 }
-                Log.i(TAG, "Drag Ended");
                 planelements.removeView(draggedView);
                 lessonPlan.addView(draggedView);
                 draggedView.setOnTouchListener(null);
-                setVisibilitySafe(draggedView, View.VISIBLE);
-                setVisibilitySafe(draggedView.findViewById(R.id.inputLayout), View.VISIBLE);
-                break;
-            case DragEvent.ACTION_DROP:
-                Log.i(TAG, "Drop");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        draggedView.setVisibility(View.VISIBLE);
+                        draggedView.findViewById(R.id.inputLayout).setVisibility(View.VISIBLE);
+                    }
+                });
                 break;
             default:
                 break;
@@ -103,8 +109,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
     }
 
     protected void setVisibilitySafe(final View v, final int visibility) {
-        v.post(new Runnable(){
-
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 v.setVisibility(visibility);
