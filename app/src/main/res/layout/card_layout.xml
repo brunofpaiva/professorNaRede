@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="@dimen/card_margin"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/card_height"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:id="@+id/commentLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/comentario"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Discutir com os alunos os exercicios, despertar o interesse."
+            android:padding="15dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <EditText
+            android:id="@+id/inputEditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+    </LinearLayout>
+
+</LinearLayout>

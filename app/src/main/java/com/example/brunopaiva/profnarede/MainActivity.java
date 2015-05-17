@@ -5,12 +5,16 @@ import android.content.ClipData;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ActionMenuView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements View.OnTouchListener, View.OnDragListener {
     private static String TAG = "narede";
@@ -31,7 +35,34 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
         lessonPlan.setOnDragListener(this);
         for (int i = 0 ; i < planelements.getChildCount() ; i++) {
             planelements.getChildAt(i).setOnTouchListener(this);
+            final EditText edittext = (EditText) planelements.getChildAt(i).findViewById(R.id.inputEditText);
+            edittext.setOnKeyListener(new View.OnKeyListener() {
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    // If the event is a key-down event on the "enter" button
+                    if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        // Perform action on key press
+                        onEnterPressed(edittext);
+                        return true;
+                    }
+                    return false;
+                }
+            });
         }
+    }
+
+    private void onEnterPressed(final EditText editText) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String text = editText.getText().toString();
+                View parentView = ((View) editText.getParent().getParent());
+
+                parentView.findViewById(R.id.commentLayout).setVisibility(View.VISIBLE);
+                ((TextView) parentView.findViewById(R.id.comentario)).setText(text);
+                editText.setText("");
+            }
+        });
     }
 
     @Override
@@ -45,6 +76,7 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
 
     @Override
     public boolean onDrag(View v, DragEvent event) {
+        Log.i(TAG, "onDrag");
         View draggedView = (View) event.getLocalState();
         switch(event.getAction()) {
 
@@ -59,9 +91,10 @@ public class MainActivity extends Activity implements View.OnTouchListener, View
                 lessonPlan.addView(draggedView);
                 draggedView.setOnTouchListener(null);
                 setVisibilitySafe(draggedView, View.VISIBLE);
-
+                setVisibilitySafe(draggedView.findViewById(R.id.inputLayout), View.VISIBLE);
                 break;
             case DragEvent.ACTION_DROP:
+                Log.i(TAG, "Drop");
                 break;
             default:
                 break;
